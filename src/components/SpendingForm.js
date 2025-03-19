@@ -1,0 +1,354 @@
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import ReactSlider from 'react-slider';
+
+const Container = styled.div`
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+`;
+
+const BackButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  
+  &:hover {
+    background-color: var(--light-gray);
+  }
+`;
+
+const Title = styled.h2`
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--text-color);
+  
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+  }
+`;
+
+const QuestionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+`;
+
+const QuestionText = styled.h2`
+  font-size: 1.5rem;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  font-weight: 600;
+`;
+
+const SliderContainer = styled.div`
+  padding: 2rem 0;
+  width: 100%;
+`;
+
+const StyledSlider = styled(ReactSlider)`
+  width: 100%;
+  height: 8px;
+`;
+
+const StyledThumb = styled.div`
+  height: 28px;
+  width: 28px;
+  background-color: #ff6b00;
+  border-radius: 50%;
+  cursor: grab;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: -10px;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(255, 107, 0, 0.3);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4);
+  }
+  
+  &:active {
+    cursor: grabbing;
+    transform: scale(1.2);
+    box-shadow: 0 6px 16px rgba(255, 107, 0, 0.5);
+  }
+`;
+
+const StyledTrack = styled.div`
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  height: 8px;
+  background: ${props => props.$index === 0 ? 'linear-gradient(90deg, #ff6b00, #ff8533)' : '#f0f0f0'};
+`;
+
+const ValueDisplay = styled.div`
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #ff6b00;
+  position: relative;
+
+  input {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    text-align: center;
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: text;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+`;
+
+const NextButton = styled.button`
+  background: linear-gradient(90deg, #ff6b00, #ff8533);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 2rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 200px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #d32f2f;
+  margin-top: 1rem;
+  text-align: center;
+`;
+
+const SpendingForm = ({ category, onSubmit, onBack }) => {
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [formValues, setFormValues] = useState({});
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    const categoryQuestions = getCategoryQuestions(category);
+    setQuestions(categoryQuestions);
+    // Initialize form values
+    const initialValues = {};
+    categoryQuestions.forEach(q => {
+      initialValues[q.key] = 0;
+    });
+    setFormValues(initialValues);
+  }, [category]);
+
+  const handleNext = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await onSubmit(formValues);
+    } catch (error) {
+      console.error('Form submission error:', error);
+    }
+  };
+
+  const getCategoryQuestions = (category) => {
+    switch(category) {
+      case 'shopping':
+        return [
+          {
+            key: 'amazon_spends',
+            text: "Enter your monthly Amazon spends",
+            max: 100000,
+            step: 1000
+          },
+          {
+            key: 'flipkart_spends',
+            text: "Enter your monthly Flipkart spends",
+            max: 100000,
+            step: 1000
+          },
+          {
+            key: 'other_online_spends',
+            text: "Enter your monthly other online spends",
+            max: 100000,
+            step: 1000
+          }
+        ];
+      case 'online_food':
+        return [
+          {
+            key: 'online_food_ordering',
+            text: "Enter your monthly food delivery spends",
+            max: 100000,
+            step: 1000
+          }
+        ];
+      case 'dining':
+        return [
+          {
+            key: 'dining_or_going_out',
+            text: "Enter your monthly dining spends",
+            max: 100000,
+            step: 1000
+          }
+        ];
+      case 'grocery':
+        return [
+          {
+            key: 'grocery_spends_online',
+            text: "Enter your monthly grocery spends",
+            max: 100000,
+            step: 1000
+          }
+        ];
+      case 'travel':
+        return [
+          {
+            key: 'flights_annual',
+            text: "Enter your annual flight spends",
+            max: 100000,
+            step: 1000
+          },
+          {
+            key: 'hotels_annual',
+            text: "Enter your annual hotel spends",
+            max: 100000,
+            step: 1000
+          }
+        ];
+      case 'bills':
+        return [
+          {
+            key: 'water_bills',
+            text: "Enter your monthly water bill spends",
+            max: 100000,
+            step: 1000
+          },
+          {
+            key: 'electricity_bills',
+            text: "Enter your monthly electricity bill spends",
+            max: 100000,
+            step: 1000
+          },
+          {
+            key: 'mobile_phone_bills',
+            text: "Enter your monthly mobile bill spends",
+            max: 100000,
+            step: 1000
+          }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const currentQuestionData = questions[currentQuestionIndex];
+
+  if (!currentQuestionData) {
+    return null;
+  }
+
+  return (
+    <Container>
+      <Header>
+        <BackButton onClick={onBack}>
+          ← Back
+        </BackButton>
+        <Title>{category.charAt(0).toUpperCase() + category.slice(1)} Expenses</Title>
+      </Header>
+
+      <QuestionContainer>
+        <QuestionText>{currentQuestionData.text}</QuestionText>
+        <SliderContainer>
+          <ValueDisplay>
+            <input
+              type="number"
+              value={formValues[currentQuestionData.key] || 0}
+              onChange={(e) => {
+                const value = Math.max(0, parseInt(e.target.value) || 0);
+                setFormValues(prev => ({
+                  ...prev,
+                  [currentQuestionData.key]: value
+                }));
+              }}
+              min="0"
+            />
+          </ValueDisplay>
+          <StyledSlider
+            value={Math.min(formValues[currentQuestionData.key] || 0, currentQuestionData.max)}
+            onChange={(value) => {
+              setFormValues(prev => ({
+                ...prev,
+                [currentQuestionData.key]: value
+              }));
+            }}
+            min={0}
+            max={currentQuestionData.max}
+            step={currentQuestionData.step}
+            renderThumb={(props) => <StyledThumb {...props} />}
+            renderTrack={(props, state) => <StyledTrack {...props} $index={state.index} />}
+          />
+        </SliderContainer>
+        <NextButton onClick={handleNext}>
+          {currentQuestionIndex === questions.length - 1 ? 'Find Cards' : 'Next'}
+        </NextButton>
+      </QuestionContainer>
+    </Container>
+  );
+};
+
+export default SpendingForm; 
