@@ -115,6 +115,12 @@ const categories = [
     name: 'Fuel',
     icon: '⛽',
     description: 'Save on fuel purchases at any petrol pump'
+  },
+  {
+    id: 'online_food_ordering',
+    name: 'Online Food Ordering',
+    icon: '🥡',
+    description: 'Best rewards on Swiggy, Zomato & other food delivery apps'
   }
 ];
 
