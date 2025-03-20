@@ -3,9 +3,19 @@ import styled from 'styled-components';
 import LoadingScreen from './LoadingScreen';
 
 const Container = styled.div`
-  padding: 1.5rem;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 2rem 1rem;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    touch-action: pan-y;
+  }
 `;
 
 const Header = styled.div`
@@ -52,28 +62,24 @@ const SectionTitle = styled.h3`
 
 const TopCardsScroll = styled.div`
   display: flex;
+  gap: 1rem;
   overflow-x: auto;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
+  padding: 1rem 0;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  margin: 0 -1.5rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  margin: 0 -1rem;
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem 0;
+    margin: 0;
+    gap: 0.5rem;
+  }
   
   &::-webkit-scrollbar {
-    height: 8px;
+    display: none;
   }
-  
-  &::-webkit-scrollbar-track {
-    background: var(--light-gray);
-    border-radius: 10px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 10px;
-  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 const RemainingCardsSection = styled.section``;
@@ -101,12 +107,21 @@ const CardItem = styled.div`
   transform: translateY(20px);
   animation: ${props => props.isVisible ? 'cardAppear 0.3s forwards' : 'none'};
   animation-delay: ${props => props.animationDelay}ms;
+  width: 100%;
+  max-width: 100%;
   
   ${props => props.isTopCard && `
     scroll-snap-align: start;
     min-width: 300px;
     max-width: 340px;
   `}
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
   
   @keyframes cardAppear {
     to {

@@ -79,12 +79,7 @@ const CategoryDescription = styled.p`
   line-height: 1.4;
   
   @media (max-width: 480px) {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: 2.8em;
+    display: none;
   }
 `;
 
