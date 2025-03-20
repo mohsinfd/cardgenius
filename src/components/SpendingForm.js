@@ -74,15 +74,15 @@ const StyledSlider = styled(ReactSlider)`
 `;
 
 const StyledThumb = styled.div`
-  height: 28px;
-  width: 28px;
+  height: 20px;
+  width: 20px;
   background-color: #ff6b00;
   border-radius: 50%;
   cursor: grab;
   display: flex;
   justify-content: center;
   align-items: center;
-  top: -10px;
+  top: -6px;
   outline: none;
   box-shadow: 0 2px 8px rgba(255, 107, 0, 0.3);
   transition: all 0.2s ease;
@@ -174,7 +174,6 @@ const ErrorMessage = styled.div`
 `;
 
 const SpendingForm = ({ category, onSubmit, onBack }) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formValues, setFormValues] = useState({});
   const [questions, setQuestions] = useState([]);
 
@@ -189,20 +188,19 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     setFormValues(initialValues);
   }, [category]);
 
-  const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
-      handleSubmit();
-    }
-  };
-
   const handleSubmit = async () => {
     try {
       await onSubmit(formValues);
     } catch (error) {
       console.error('Form submission error:', error);
     }
+  };
+
+  const handleValueChange = (key, value) => {
+    setFormValues(prev => ({
+      ...prev,
+      [key]: value
+    }));
   };
 
   const getCategoryQuestions = (category) => {
@@ -228,7 +226,7 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
             step: 1000
           }
         ];
-      case 'online_food':
+      case 'online_food_ordering':
         return [
           {
             key: 'online_food_ordering',
@@ -296,55 +294,73 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     }
   };
 
-  const currentQuestionData = questions[currentQuestionIndex];
-
-  if (!currentQuestionData) {
-    return null;
-  }
+  const getCategoryTitle = (category) => {
+    switch(category) {
+      case 'shopping':
+        return 'Shopping Expenses';
+      case 'online_food_ordering':
+        return 'Online Food Ordering Expenses';
+      case 'dining':
+        return 'Dining Expenses';
+      case 'grocery':
+        return 'Grocery Expenses';
+      case 'travel':
+        return 'Travel Expenses';
+      case 'bills':
+        return 'Bills Expenses';
+      default:
+        return 'Expenses';
+    }
+  };
 
   return (
     <Container>
       <Header>
         <BackButton onClick={onBack}>
-          ← Back
+          ←
         </BackButton>
-        <Title>{category.charAt(0).toUpperCase() + category.slice(1)} Expenses</Title>
+        <Title>{getCategoryTitle(category)}</Title>
       </Header>
-
+      
       <QuestionContainer>
-        <QuestionText>{currentQuestionData.text}</QuestionText>
-        <SliderContainer>
-          <ValueDisplay>
-            <input
-              type="number"
-              value={formValues[currentQuestionData.key] || 0}
-              onChange={(e) => {
-                const value = Math.max(0, parseInt(e.target.value) || 0);
-                setFormValues(prev => ({
-                  ...prev,
-                  [currentQuestionData.key]: value
-                }));
-              }}
-              min="0"
-            />
-          </ValueDisplay>
-          <StyledSlider
-            value={Math.min(formValues[currentQuestionData.key] || 0, currentQuestionData.max)}
-            onChange={(value) => {
-              setFormValues(prev => ({
-                ...prev,
-                [currentQuestionData.key]: value
-              }));
-            }}
-            min={0}
-            max={currentQuestionData.max}
-            step={currentQuestionData.step}
-            renderThumb={(props) => <StyledThumb {...props} />}
-            renderTrack={(props, state) => <StyledTrack {...props} $index={state.index} />}
-          />
-        </SliderContainer>
-        <NextButton onClick={handleNext}>
-          {currentQuestionIndex === questions.length - 1 ? 'Find Cards' : 'Next'}
+        {questions.map((question, index) => (
+          <div key={question.key} style={{ width: '100%', marginBottom: '2rem' }}>
+            <QuestionText>{question.text}</QuestionText>
+            <SliderContainer>
+              <StyledSlider
+                value={formValues[question.key] || 0}
+                onChange={(value) => handleValueChange(question.key, value)}
+                min={0}
+                max={question.max}
+                step={question.step}
+                renderThumb={(props, state) => (
+                  <StyledThumb {...props}>
+                    <div style={{ 
+                      position: 'absolute', 
+                      top: '-30px', 
+                      left: '50%', 
+                      transform: 'translateX(-50%)',
+                      background: '#ff6b00',
+                      color: 'white',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '0.8rem',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      ₹{state.valueNow.toLocaleString()}
+                    </div>
+                  </StyledThumb>
+                )}
+                renderTrack={(props, state) => (
+                  <StyledTrack {...props} $index={state.index} />
+                )}
+              />
+            </SliderContainer>
+          </div>
+        ))}
+        
+        <NextButton onClick={handleSubmit}>
+          Find Cards
         </NextButton>
       </QuestionContainer>
     </Container>

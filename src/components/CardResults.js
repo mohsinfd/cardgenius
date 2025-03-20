@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import LoadingScreen from './LoadingScreen';
 
 const Container = styled.div`
   padding: 1.5rem;
@@ -52,10 +53,13 @@ const SectionTitle = styled.h3`
 const TopCardsScroll = styled.div`
   display: flex;
   overflow-x: auto;
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 0.5rem 0;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  margin: 0 -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
   
   &::-webkit-scrollbar {
     height: 8px;
@@ -80,14 +84,17 @@ const CardsList = styled.div`
   gap: 1.5rem;
 `;
 
-const CardItem = styled.a`
+const CardItem = styled.div`
   display: flex;
   flex-direction: column;
-  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  background: white;
   border-radius: 16px;
   padding: 1.5rem;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  border: 2px solid transparent;
+  background-image: ${props => props.cardBgGradient ? props.cardBgGradient : 'none'};
+  background-clip: padding-box;
   position: relative;
   overflow: hidden;
   text-decoration: none;
@@ -97,6 +104,12 @@ const CardItem = styled.a`
   animation: ${props => props.isVisible ? 'cardAppear 0.3s forwards' : 'none'};
   animation-delay: ${props => props.animationDelay}ms;
   
+  ${props => props.isTopCard && `
+    scroll-snap-align: start;
+    min-width: 300px;
+    max-width: 340px;
+  `}
+  
   @keyframes cardAppear {
     to {
       opacity: 1;
@@ -104,15 +117,9 @@ const CardItem = styled.a`
     }
   }
   
-  ${props => props.isTopCard && `
-    scroll-snap-align: start;
-    min-width: 320px;
-    max-width: 360px;
-  `}
-
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 `;
 
@@ -150,17 +157,6 @@ const RankLabel = styled.div`
   z-index: 1;
 `;
 
-const CardHeader = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-
-  @media (min-width: 480px) {
-    grid-template-columns: auto 1fr;
-  }
-`;
-
 const CardImageContainer = styled.div`
   width: 100%;
   height: 180px;
@@ -169,10 +165,12 @@ const CardImageContainer = styled.div`
   justify-content: center;
   background: transparent;
   position: relative;
+  margin-bottom: 1rem;
   
   @media (min-width: 480px) {
     width: 280px;
     height: 180px;
+    margin-bottom: 0;
   }
 `;
 
@@ -180,6 +178,7 @@ const CardImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 8px;
   
   /* Fallback for broken images */
   &::before {
@@ -208,10 +207,22 @@ const JoiningFeeTag = styled.div`
   white-space: nowrap;
 `;
 
+const CardHeader = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  @media (min-width: 480px) {
+    grid-template-columns: auto 1fr;
+  }
+`;
+
 const CardInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  width: 100%;
 `;
 
 const CardName = styled.h4`
@@ -219,6 +230,10 @@ const CardName = styled.h4`
   font-size: 1.4rem;
   color: #1a1a1a;
   font-weight: 600;
+  
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const CardSavings = styled.div`
@@ -230,6 +245,10 @@ const CardSavings = styled.div`
   align-items: center;
   gap: 0.5rem;
   overflow: hidden;
+  
+  @media (max-width: 480px) {
+    font-size: 1.4rem;
+  }
   
   &::before {
     content: '';
@@ -247,19 +266,9 @@ const CardSavings = styled.div`
     animation: shimmer 2s infinite linear;
   }
 
-  span {
-    font-size: 1rem;
-    color: #666;
-    font-weight: 400;
-  }
-
   @keyframes shimmer {
-    0% {
-      left: -100%;
-    }
-    100% {
-      left: 200%;
-    }
+    0% { left: -100%; }
+    100% { left: 200%; }
   }
 `;
 
@@ -281,23 +290,16 @@ const BenefitItem = styled.li`
 `;
 
 const BenefitHeader = styled.div`
-  color: #ff6b00;
+  font-size: 1.1rem;
   font-weight: 600;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-
-  &::before {
-    content: "★";
-    color: #ff6b00;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
 `;
 
 const BenefitDescription = styled.div`
+  font-size: 0.9rem;
   color: #666;
-  padding-left: 1.7rem;
+  line-height: 1.4;
 `;
 
 const NoResultsMessage = styled.div`
@@ -330,6 +332,7 @@ const BenefitText = styled.div`
 const CardResults = ({ cards, onReset, isLoading, error, category, formData }) => {
   console.log('CardResults received cards:', cards);
   const [visibleCards, setVisibleCards] = useState([]);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   
   useEffect(() => {
     if (cards && cards.length > 0) {
@@ -338,16 +341,21 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
     }
   }, [cards]);
 
+  const handleLoadingComplete = () => {
+    setShowLoadingScreen(false);
+  };
+
   const getCategoryTitle = (category) => {
-    const categoryMap = {
+    const categoryTitles = {
       'shopping': 'Shopping',
       'travel': 'Travel',
       'dining': 'Dining',
       'grocery': 'Grocery',
-      'bills': 'Bills',
-      'fuel': 'Fuel'
+      'bills': 'Utility Bills',
+      'fuel': 'Fuel',
+      'online_food_ordering': 'Online Food Ordering'
     };
-    return categoryMap[category] || category;
+    return categoryTitles[category] || category;
   };
 
   const calculateTotalSpend = (formData) => {
@@ -355,8 +363,8 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
     return Object.values(formData).reduce((sum, value) => sum + (Number(value) || 0), 0);
   };
 
-  if (isLoading) {
-    return <LoadingMessage>Loading...</LoadingMessage>;
+  if (showLoadingScreen) {
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
 
   if (error) {
@@ -384,7 +392,8 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
       'dining': 6,
       'grocery': 7,
       'bills': 14,
-      'fuel': 1
+      'fuel': 1,
+      'online_food_ordering': 5
     };
     return tagIdMap[category] || 0;
   };
@@ -406,14 +415,16 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
       );
     }
 
-    return categoryBenefits.slice(0, 2).map((benefit, index) => (
-      <BenefitItem key={index}>
+    // Only show the highest priority benefit
+    const topBenefit = categoryBenefits[0];
+    return (
+      <BenefitItem>
         <BenefitText>
-          <BenefitHeader>{benefit.header}</BenefitHeader>
-          <BenefitDescription>{benefit.description}</BenefitDescription>
+          <BenefitHeader>{topBenefit.header}</BenefitHeader>
+          <BenefitDescription>{topBenefit.description}</BenefitDescription>
         </BenefitText>
       </BenefitItem>
-    ));
+    );
   };
 
   const totalSpend = calculateTotalSpend(formData);
@@ -439,6 +450,8 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
               isTopCard
               isVisible={true}
               animationDelay={index * 100}
+              rank={index + 1}
+              cardBgGradient={card.card_bg_gradient}
             >
               <RankLabel rank={index + 1}>
                 {index === 0 ? 'Best Match' : index === 1 ? '#2' : '#3'}
@@ -474,6 +487,8 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
               rel="noopener noreferrer"
               isVisible={true}
               animationDelay={index * 100}
+              rank={index + 1}
+              cardBgGradient={card.card_bg_gradient}
             >
               <CardHeader>
                 <CardImageContainer>

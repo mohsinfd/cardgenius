@@ -77,6 +77,15 @@ const CategoryDescription = styled.p`
   color: #666;
   margin: 0;
   line-height: 1.4;
+  
+  @media (max-width: 480px) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 2.8em;
+  }
 `;
 
 const categories = [
@@ -84,43 +93,50 @@ const categories = [
     id: 'shopping',
     name: 'Shopping',
     icon: '🛍️',
-    description: 'Maximize cashback on Amazon, Flipkart & other online shopping'
+    description: 'Maximize cashback on Amazon, Flipkart & other online shopping',
+    mobileDescription: 'Best rewards on online shopping'
   },
   {
     id: 'travel',
     name: 'Travel',
     icon: '✈️',
-    description: 'Best rewards on flights, hotels and travel bookings'
+    description: 'Best rewards on flights, hotels and travel bookings',
+    mobileDescription: 'Rewards on flights & hotels'
   },
   {
     id: 'dining',
     name: 'Dining',
     icon: '🍽️',
-    description: 'Extra rewards on restaurant bills and food delivery'
+    description: 'Extra rewards on restaurant bills and food delivery',
+    mobileDescription: 'Rewards on dining & delivery'
   },
   {
     id: 'grocery',
     name: 'Grocery',
     icon: '🛒',
-    description: 'Earn rewards on grocery shopping online & offline'
+    description: 'Earn rewards on grocery shopping online & offline',
+    mobileDescription: 'Rewards on grocery shopping'
   },
   {
     id: 'bills',
     name: 'Utility Bills',
     icon: '📱',
-    description: 'Rewards on electricity, mobile & other bill payments'
+    description: 'Rewards on electricity, mobile & other bill payments',
+    mobileDescription: 'Rewards on bill payments'
   },
   {
     id: 'fuel',
     name: 'Fuel',
     icon: '⛽',
-    description: 'Save on fuel purchases at any petrol pump'
+    description: 'Save on fuel purchases at any petrol pump',
+    mobileDescription: 'Save on fuel'
   },
   {
     id: 'online_food_ordering',
     name: 'Online Food Ordering',
     icon: '🥡',
-    description: 'Best rewards on Swiggy, Zomato & other food delivery apps'
+    description: 'Best rewards on Swiggy, Zomato & other food delivery apps',
+    mobileDescription: 'Rewards on food delivery'
   }
 ];
 
@@ -143,7 +159,9 @@ const CategoryList = ({ onCategorySelect }) => {
               {category.icon}
             </IconContainer>
             <CategoryName>{category.name}</CategoryName>
-            <CategoryDescription>{category.description}</CategoryDescription>
+            <CategoryDescription>
+              {window.innerWidth <= 480 ? category.mobileDescription : category.description}
+            </CategoryDescription>
           </CategoryCard>
         ))}
       </Grid>
