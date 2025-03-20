@@ -92,9 +92,7 @@ const CardItem = styled.div`
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  border: 2px solid transparent;
-  background-image: ${props => props.cardBgGradient ? props.cardBgGradient : 'none'};
-  background-clip: padding-box;
+  border: ${props => props.rank <= 3 ? `2px solid ${props.rank === 1 ? '#FFD700' : props.rank === 2 ? '#C0C0C0' : '#CD7F32'}` : 'none'};
   position: relative;
   overflow: hidden;
   text-decoration: none;
@@ -166,11 +164,13 @@ const CardImageContainer = styled.div`
   background: transparent;
   position: relative;
   margin-bottom: 1rem;
+  padding: 0 1rem;
   
   @media (min-width: 480px) {
     width: 280px;
     height: 180px;
     margin-bottom: 0;
+    padding: 0;
   }
 `;
 
@@ -451,7 +451,6 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
               isVisible={true}
               animationDelay={index * 100}
               rank={index + 1}
-              cardBgGradient={card.card_bg_gradient}
             >
               <RankLabel rank={index + 1}>
                 {index === 0 ? 'Best Match' : index === 1 ? '#2' : '#3'}
@@ -487,8 +486,7 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
               rel="noopener noreferrer"
               isVisible={true}
               animationDelay={index * 100}
-              rank={index + 1}
-              cardBgGradient={card.card_bg_gradient}
+              rank={index + 4}
             >
               <CardHeader>
                 <CardImageContainer>
