@@ -17,7 +17,7 @@ const preparePayload = (category, spendingData) => {
     'grocery': { slug: 'BestCardsforGroceryShopping', tag_id: '7' },
     'bills': { slug: 'best-utility-credit-card', tag_id: '14' },
     'fuel': { slug: 'best-fuel-credit-card', tag_id: '1' },
-    'online_food_ordering': { slug: 'online-food-ordering', tag_id: '5' }
+    'online-food-ordering': { slug: 'online-food-ordering', tag_id: '5' }
   };
 
   const categoryInfo = categoryMap[category];
@@ -72,7 +72,7 @@ const preparePayload = (category, spendingData) => {
         fuel: parseInt(fuelValue)
       };
       break;
-    case 'online_food_ordering':
+    case 'online-food-ordering':
       cardGeniusPayload = {
         ...cardGeniusPayload,
         online_food_ordering: parseInt(spendingData.online_food_ordering) || 0
@@ -165,7 +165,7 @@ const calculateAnnualSavings = (card, spendingData, category) => {
                      (electricitySavings * electricitySpends) + 
                      (mobileSavings * mobileSpends);
       break;
-    case 'online_food_ordering':
+    case 'online-food-ordering':
       const foodOrderingSpends = parseInt(spendingData.online_food_ordering) || 0;
       const foodOrderingSavings = spendingBreakdown.find(item => item.on === 'online_food_ordering')?.savings || 0;
       annualSavings = foodOrderingSavings * foodOrderingSpends;

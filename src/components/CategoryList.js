@@ -93,6 +93,13 @@ const CategoryList = ({ onCategorySelect }) => {
       mobileDescription: 'Best rewards on online shopping'
     },
     {
+      id: 'online-food-ordering',
+      name: 'Online Food',
+      icon: '🍕',
+      description: 'Best rewards on Swiggy, Zomato & other food delivery',
+      mobileDescription: 'Rewards on food delivery'
+    },
+    {
       id: 'travel',
       name: 'Travel',
       icon: '✈️',

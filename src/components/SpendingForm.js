@@ -192,7 +192,7 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
 
   const handleBack = (e) => {
     e.preventDefault();
-    navigate('/');
+    onBack();
   };
     
   const handleSubmit = async () => {
