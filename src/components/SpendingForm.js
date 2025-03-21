@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ReactSlider from 'react-slider';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   padding: 1.5rem;
@@ -174,9 +175,10 @@ const ErrorMessage = styled.div`
 `;
 
 const SpendingForm = ({ category, onSubmit, onBack }) => {
+  const navigate = useNavigate();
   const [formValues, setFormValues] = useState({});
   const [questions, setQuestions] = useState([]);
-
+  
   useEffect(() => {
     const categoryQuestions = getCategoryQuestions(category);
     setQuestions(categoryQuestions);
@@ -188,6 +190,11 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     setFormValues(initialValues);
   }, [category]);
 
+  const handleBack = (e) => {
+    e.preventDefault();
+    navigate('/');
+  };
+    
   const handleSubmit = async () => {
     try {
       await onSubmit(formValues);
@@ -195,14 +202,14 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
       console.error('Form submission error:', error);
     }
   };
-
+  
   const handleValueChange = (key, value) => {
     setFormValues(prev => ({
       ...prev,
       [key]: value
     }));
   };
-
+  
   const getCategoryQuestions = (category) => {
     switch(category) {
       case 'shopping':
@@ -226,7 +233,7 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
             step: 1000
           }
         ];
-      case 'online_food_ordering':
+      case 'online-food-ordering':
         return [
           {
             key: 'online_food_ordering',
@@ -298,7 +305,7 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     switch(category) {
       case 'shopping':
         return 'Shopping Expenses';
-      case 'online_food_ordering':
+      case 'online-food-ordering':
         return 'Online Food Ordering Expenses';
       case 'dining':
         return 'Dining Expenses';
@@ -312,13 +319,11 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
         return 'Expenses';
     }
   };
-
+  
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>
-          ←
-        </BackButton>
+        <BackButton onClick={handleBack}>←</BackButton>
         <Title>{getCategoryTitle(category)}</Title>
       </Header>
       

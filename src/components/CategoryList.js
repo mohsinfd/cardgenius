@@ -19,7 +19,7 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
-  
+
   @media (min-width: 768px) {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
@@ -40,7 +40,7 @@ const CategoryCard = styled.button`
   text-align: center;
   height: 100%;
   min-height: 240px;
-  
+
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -57,7 +57,7 @@ const IconContainer = styled.div`
   background: linear-gradient(135deg, #ff6b0010 0%, #ff6b0020 100%);
   border-radius: 50%;
   font-size: 2.5rem;
-  
+
   @media (min-width: 768px) {
     width: 88px;
     height: 88px;
@@ -77,65 +77,58 @@ const CategoryDescription = styled.p`
   color: #666;
   margin: 0;
   line-height: 1.4;
-  
+
   @media (max-width: 480px) {
     display: none;
   }
 `;
 
-const categories = [
-  {
-    id: 'shopping',
-    name: 'Shopping',
-    icon: '🛍️',
-    description: 'Maximize cashback on Amazon, Flipkart & other online shopping',
-    mobileDescription: 'Best rewards on online shopping'
-  },
-  {
-    id: 'travel',
-    name: 'Travel',
-    icon: '✈️',
-    description: 'Best rewards on flights, hotels and travel bookings',
-    mobileDescription: 'Rewards on flights & hotels'
-  },
-  {
-    id: 'dining',
-    name: 'Dining',
-    icon: '🍽️',
-    description: 'Extra rewards on restaurant bills and food delivery',
-    mobileDescription: 'Rewards on dining & delivery'
-  },
-  {
-    id: 'grocery',
-    name: 'Grocery',
-    icon: '🛒',
-    description: 'Earn rewards on grocery shopping online & offline',
-    mobileDescription: 'Rewards on grocery shopping'
-  },
-  {
-    id: 'bills',
-    name: 'Utility Bills',
-    icon: '📱',
-    description: 'Rewards on electricity, mobile & other bill payments',
-    mobileDescription: 'Rewards on bill payments'
-  },
-  {
-    id: 'fuel',
-    name: 'Fuel',
-    icon: '⛽',
-    description: 'Save on fuel purchases at any petrol pump',
-    mobileDescription: 'Save on fuel'
-  },
-  {
-    id: 'online_food_ordering',
-    name: 'Online Food Ordering',
-    icon: '🥡',
-    description: 'Best rewards on Swiggy, Zomato & other food delivery apps',
-    mobileDescription: 'Rewards on food delivery'
-  }
-];
-
 const CategoryList = ({ onCategorySelect }) => {
+  const categories = [
+    {
+      id: 'shopping',
+      name: 'Shopping',
+      icon: '🛍️',
+      description: 'Maximize cashback on Amazon, Flipkart & other online shopping',
+      mobileDescription: 'Best rewards on online shopping'
+    },
+    {
+      id: 'travel',
+      name: 'Travel',
+      icon: '✈️',
+      description: 'Best rewards on flights, hotels and travel bookings',
+      mobileDescription: 'Rewards on flights & hotels'
+    },
+    {
+      id: 'dining',
+      name: 'Dining',
+      icon: '🍽️',
+      description: 'Extra rewards on restaurant bills and food delivery',
+      mobileDescription: 'Rewards on dining & delivery'
+    },
+    {
+      id: 'grocery',
+      name: 'Grocery',
+      icon: '🛒',
+      description: 'Earn rewards on grocery shopping online & offline',
+      mobileDescription: 'Rewards on grocery shopping'
+    },
+    {
+      id: 'bills',
+      name: 'Utility Bills',
+      icon: '📱',
+      description: 'Rewards on electricity, mobile & other bill payments',
+      mobileDescription: 'Rewards on bill payments'
+    },
+    {
+      id: 'fuel',
+      name: 'Fuel',
+      icon: '⛽',
+      description: 'Save on fuel purchases at any petrol pump',
+      mobileDescription: 'Save on fuel'
+    }
+  ];
+
   const handleCategoryClick = (categoryId) => {
     console.log('Category selected:', categoryId);
     onCategorySelect(categoryId);
