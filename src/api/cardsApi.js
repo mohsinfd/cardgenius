@@ -218,7 +218,8 @@ export const getCardRecommendations = async (category, spendingData) => {
     // Return the filtered cards directly since they already have annual_saving calculated
     const result = {
       data: {
-        cards: filteredCards
+        cards: filteredCards,
+        filteredCards: filteredCards
       }
     };
     console.log('Returning result:', result);

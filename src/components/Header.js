@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo';
@@ -59,18 +59,19 @@ const MenuItem = styled.a`
   &:hover {
     background: #f5f5f5;
   }
-
-  &.auth {
-    color: ${props => props.$isAuthenticated ? '#d32f2f' : '#0066FF'};
-  }
 `;
 
-const Header = ({ onAuthClick, isAuthenticated }) => {
+const Header = () => {
   const navigate = useNavigate();
 
   const handleHomeClick = (e) => {
     e.preventDefault();
     navigate('/');
+  };
+
+  const handleAmazonClick = (e) => {
+    e.preventDefault();
+    navigate('/amazon-cards');
   };
 
   return (
@@ -80,6 +81,9 @@ const Header = ({ onAuthClick, isAuthenticated }) => {
           <Logo />
           <LogoText>CardGenius</LogoText>
         </LogoContainer>
+        <MenuItems>
+          <MenuItem onClick={handleAmazonClick}>Amazon Cards</MenuItem>
+        </MenuItems>
       </Nav>
     </HeaderContainer>
   );

@@ -174,13 +174,13 @@ const ErrorMessage = styled.div`
   text-align: center;
 `;
 
-const SpendingForm = ({ category, onSubmit, onBack }) => {
+const SpendingForm = ({ category, onSubmit, onBack, isAmazonOnly }) => {
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState({});
   const [questions, setQuestions] = useState([]);
   
   useEffect(() => {
-    const categoryQuestions = getCategoryQuestions(category);
+    const categoryQuestions = getCategoryQuestions(category, isAmazonOnly);
     setQuestions(categoryQuestions);
     // Initialize form values
     const initialValues = {};
@@ -188,7 +188,7 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
       initialValues[q.key] = 0;
     });
     setFormValues(initialValues);
-  }, [category]);
+  }, [category, isAmazonOnly]);
 
   const handleBack = (e) => {
     e.preventDefault();
@@ -210,7 +210,18 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     }));
   };
   
-  const getCategoryQuestions = (category) => {
+  const getCategoryQuestions = (category, isAmazonOnly) => {
+    if (isAmazonOnly) {
+      return [
+        {
+          key: 'amazon_spends',
+          text: "Enter your monthly Amazon spends",
+          max: 100000,
+          step: 1000
+        }
+      ];
+    }
+
     switch(category) {
       case 'shopping':
         return [
@@ -301,7 +312,11 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     }
   };
 
-  const getCategoryTitle = (category) => {
+  const getCategoryTitle = (category, isAmazonOnly) => {
+    if (isAmazonOnly) {
+      return 'Amazon Shopping Expenses';
+    }
+
     switch(category) {
       case 'shopping':
         return 'Shopping Expenses';
@@ -324,7 +339,7 @@ const SpendingForm = ({ category, onSubmit, onBack }) => {
     <Container>
       <Header>
         <BackButton onClick={handleBack}>←</BackButton>
-        <Title>{getCategoryTitle(category)}</Title>
+        <Title>{getCategoryTitle(category, isAmazonOnly)}</Title>
       </Header>
       
       <QuestionContainer>

@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CategoryList from './components/CategoryList';
 import SpendingForm from './components/SpendingForm';
 import CardResults from './components/CardResults';
+import AmazonCardResults from './components/AmazonCardResults';
 import Footer from './components/Footer';
-import SignUp from './components/SignUp';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import { isAuthenticated, setAuthToken, removeAuthToken } from './utils/auth';
 import { getCardRecommendations } from './api/cardsApi';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
@@ -27,22 +26,9 @@ const MainContent = styled.main`
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [formData, setFormData] = useState({});
-  const [showSignUp, setShowSignUp] = useState(false);
-  const [isAuthenticatedUser, setIsAuthenticatedUser] = useState(false);
   const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const checkAuth = () => {
-      const authStatus = isAuthenticated();
-      setIsAuthenticatedUser(authStatus);
-    };
-    
-    checkAuth();
-    window.addEventListener('storage', checkAuth);
-    return () => window.removeEventListener('storage', checkAuth);
-  }, []);
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
@@ -95,25 +81,10 @@ const App = () => {
     setError(null);
   };
 
-  const handleAuthClick = () => {
-    if (isAuthenticatedUser) {
-      removeAuthToken();
-      setIsAuthenticatedUser(false);
-    } else {
-      setShowSignUp(true);
-    }
-  };
-
-  const handleSignUpSuccess = () => {
-    setShowSignUp(false);
-    setIsAuthenticatedUser(true);
-    window.dispatchEvent(new Event('storage'));
-  };
-
   return (
     <Router>
       <AppContainer>
-        <Header onAuthClick={handleAuthClick} isAuthenticated={isAuthenticatedUser} />
+        <Header />
         <MainContent>
           <Routes>
             <Route path="/" element={
@@ -137,23 +108,15 @@ const App = () => {
                     error={error}
                     category={selectedCategory}
                     formData={formData}
-                    onAuthClick={handleAuthClick}
-                    isAuthenticated={isAuthenticatedUser}
                   />
                 )}
               </AppContainer>
             } />
+            <Route path="/amazon-cards" element={<AmazonCardResults />} />
           </Routes>
         </MainContent>
         <Footer />
         <Toaster position="top-right" />
-
-        {showSignUp && (
-          <SignUp 
-            onClose={() => setShowSignUp(false)}
-            onSuccess={handleSignUpSuccess}
-          />
-        )}
       </AppContainer>
     </Router>
   );

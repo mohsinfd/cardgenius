@@ -5,9 +5,9 @@ import { isAuthenticated } from '../utils/auth';
 import { toast } from 'react-hot-toast';
 
 const ApplyButton = styled.a`
-  background: ${props => props.$hollow ? 'transparent' : '#0066FF'};
-  color: ${props => props.$hollow ? '#0066FF' : 'white'};
-  border: 2px solid #0066FF;
+  background: ${props => props.$hollow ? 'transparent' : '#232f3e'};
+  color: ${props => props.$hollow ? '#232f3e' : 'white'};
+  border: 2px solid #232f3e;
   display: inline-block;
   padding: 0.8rem 1.5rem;
   border-radius: 6px;
@@ -24,7 +24,7 @@ const ApplyButton = styled.a`
   }
 
   &:hover {
-    background: ${props => props.$hollow ? '#0066FF' : '#0052cc'};
+    background: ${props => props.$hollow ? '#232f3e' : '#37475a'};
     color: white;
   }
 `;
@@ -129,7 +129,7 @@ const CardContainer = styled.div`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease;
   ${props => props.$isTopCard && `
-    border: 2px solid #0066FF;
+    border: 2px solid #febd69;
     
     @media (min-width: 768px) {
       display: flex;
@@ -166,7 +166,7 @@ const CardHeader = styled.div`
 const CardTitle = styled.h3`
   margin: 0;
   font-size: 1.4rem;
-  color: #000;
+  color: #232f3e;
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
@@ -176,7 +176,7 @@ const CardTitle = styled.h3`
     text-decoration: inherit;
     
     &:hover {
-      color: #0066FF;
+      color: #febd69;
     }
   }
   
@@ -236,7 +236,7 @@ const CardItem = styled.div`
   padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
-  border: ${props => props.rank <= 3 ? `2px solid ${props.rank === 1 ? '#FFD700' : props.rank === 2 ? '#C0C0C0' : '#CD7F32'}` : 'none'};
+  border: ${props => props.rank <= 3 ? `2px solid ${props.rank === 1 ? '#febd69' : props.rank === 2 ? '#37475a' : '#232f3e'}` : 'none'};
   position: relative;
   overflow: hidden;
   text-decoration: none;
@@ -248,8 +248,6 @@ const CardItem = styled.div`
   
   ${props => props.isTopCard && `
     scroll-snap-align: start;
-    min-width: 300px;
-    max-width: 340px;
   `}
   
   @media (max-width: 480px) {
@@ -415,7 +413,7 @@ const BenefitsList = styled.ul`
   margin: 0;
 `;
 
-const CardResults = ({ cards, onReset, isLoading, error, category, formData }) => {
+const CardResults = ({ cards, onReset, isLoading, error, category, formData, onAuthClick, isAuthenticated, isAmazonOnly, tagId, maxUsps }) => {
   console.log('CardResults received cards:', cards);
   const [visibleCards, setVisibleCards] = useState([]);
   const [showLoadingScreen, setShowLoadingScreen] = useState(false);
@@ -434,7 +432,11 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
     setShowLoadingScreen(false);
   };
 
-  const getCategoryTitle = (category) => {
+  const getCategoryTitle = (category, isAmazonOnly) => {
+    if (isAmazonOnly) {
+      return 'Amazon Shopping';
+    }
+
     const categoryTitles = {
       'shopping': 'Shopping',
       'travel': 'Travel',
@@ -488,12 +490,13 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
   };
 
   const renderBenefits = (card) => {
-    const tagId = getTagIdForCategory(category);
     const categoryBenefits = card.product_usps
-      ?.filter(benefit => benefit.tag_id === tagId)
+      ?.filter(benefit => !tagId || benefit.tag_id === tagId)
       ?.sort((a, b) => a.priority - b.priority) || [];
 
-    if (categoryBenefits.length === 0) {
+    const benefitsToShow = maxUsps ? categoryBenefits.slice(0, maxUsps) : categoryBenefits;
+
+    if (benefitsToShow.length === 0) {
       return (
         <BenefitItem>
           <BenefitHeader>
@@ -504,18 +507,17 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
       );
     }
 
-    const topBenefit = categoryBenefits[0];
-    return (
-      <BenefitItem>
+    return benefitsToShow.map((benefit, index) => (
+      <BenefitItem key={index}>
         <BenefitHeader>
           <BenefitIcon>✓</BenefitIcon>
-          {topBenefit.header}
+          {benefit.header}
         </BenefitHeader>
         <BenefitDescription>
-          {topBenefit.description}
+          {benefit.description}
         </BenefitDescription>
       </BenefitItem>
-    );
+    ));
   };
 
   const totalSpend = calculateTotalSpend(formData);
@@ -525,7 +527,7 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
       <Header>
         <BackButton onClick={onReset}>←</BackButton>
         <Title>
-          CardGenius Recommendations for your {getCategoryTitle(category)} spends of ₹{totalSpend.toLocaleString()}
+          CardGenius Recommendations for your {getCategoryTitle(category, isAmazonOnly)} spends of ₹{totalSpend.toLocaleString()}
         </Title>
       </Header>
       
@@ -560,7 +562,7 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
               </CardHeader>
               <CardInfo>
                 <CardSavings>
-                  Your {getCategoryTitle(category)} Savings: ₹{card.annual_saving.toLocaleString()}
+                  Your {getCategoryTitle(category, isAmazonOnly)} Savings: ₹{card.annual_saving.toLocaleString()}
                 </CardSavings>
                 <BenefitsList>
                   {renderBenefits(card)}
@@ -606,7 +608,7 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData }) =
               </CardHeader>
               <CardInfo>
                 <CardSavings>
-                  Your {getCategoryTitle(category)} Savings: ₹{card.annual_saving.toLocaleString()}
+                  Your {getCategoryTitle(category, isAmazonOnly)} Savings: ₹{card.annual_saving.toLocaleString()}
                 </CardSavings>
                 <BenefitsList>
                   {renderBenefits(card)}
