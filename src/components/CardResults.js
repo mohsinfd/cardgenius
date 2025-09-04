@@ -534,15 +534,15 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData, onA
           <TopCardsSection>
         <SectionTitle>Top Picks</SectionTitle>
             <TopCardsScroll>
-          {visibleCards.slice(0, 3).map((card, index) => (
+          {visibleCards.filter(card => card && card.id).slice(0, 3).map((card, index) => (
             <CardContainer key={card.id} $isTopCard={true}>
               <RankLabel rank={index + 1}>
                 {index === 0 ? 'Best Card' : `#${index + 1}`}
               </RankLabel>
               <div style={{ position: 'relative' }}>
                 <CardImage
-                  src={card.image}
-                  alt={card.name}
+                  src={card.image || '/card-placeholder.png'}
+                  alt={card.name || 'Credit Card'}
                   loading="lazy"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
@@ -556,7 +556,7 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData, onA
               <CardHeader>
                 <CardTitle>
                   <a href={card.network_url} target="_blank" rel="noopener noreferrer">
-                    {card.name}
+                    {card.name || 'Credit Card'}
                   </a>
                 </CardTitle>
               </CardHeader>
@@ -583,12 +583,12 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData, onA
             <RemainingCardsSection>
         <SectionTitle>More Options</SectionTitle>
               <CardsList>
-          {visibleCards.slice(3).map((card, index) => (
+          {visibleCards.filter(card => card && card.id).slice(3).map((card, index) => (
             <CardContainer key={card.id} $isTopCard={false}>
               <div style={{ position: 'relative' }}>
                 <CardImage
-                  src={card.image}
-                  alt={card.name}
+                  src={card.image || '/card-placeholder.png'}
+                  alt={card.name || 'Credit Card'}
                   loading="lazy"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
@@ -602,7 +602,7 @@ const CardResults = ({ cards, onReset, isLoading, error, category, formData, onA
               <CardHeader>
                 <CardTitle>
                   <a href={card.network_url} target="_blank" rel="noopener noreferrer">
-                    {card.name}
+                    {card.name || 'Credit Card'}
                   </a>
                 </CardTitle>
               </CardHeader>

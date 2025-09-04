@@ -5,7 +5,7 @@
     {
       "src": "bankkaro.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "any"
     }
   ],
   "start_url": ".",
